@@ -11,12 +11,12 @@ import 'package:image_picker/image_picker.dart';
 
 import '../redux/store.dart';
 
-class PickUserPage extends StatefulWidget {
+class PickUserScreen extends StatefulWidget {
   @override
-  State<PickUserPage> createState() => _PickUserPageState();
+  State<PickUserScreen> createState() => _PickUserScreenState();
 }
 
-class _PickUserPageState extends State<PickUserPage> {
+class _PickUserScreenState extends State<PickUserScreen> {
   final UserService userService = UserService();
   String km = '';
   List<User>? users;
@@ -223,7 +223,7 @@ class _PickUserPageState extends State<PickUserPage> {
                                 StoreProvider.of<AppState>(context).dispatch(UpdateUser(returnedUser));
 
                               }
-                              Navigator.pushNamed(context,'/contact', arguments:  {
+                              Navigator.pushReplacementNamed(context,'/contact', arguments:  {
                                 'userNumber':pickExistingUser?selectedUser!.userNumber.toString():chosenNumber.toString(),
                               }, );
                             },

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CatalogPage extends StatefulWidget {
-  const CatalogPage({Key? key}) : super(key: key);
+class CatalogScreen extends StatefulWidget {
+  const CatalogScreen({Key? key}) : super(key: key);
 
   @override
-  _CatalogPageState createState() => _CatalogPageState();
+  _CatalogScreenState createState() => _CatalogScreenState();
 }
 
-class _CatalogPageState extends State<CatalogPage> {
+class _CatalogScreenState extends State<CatalogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

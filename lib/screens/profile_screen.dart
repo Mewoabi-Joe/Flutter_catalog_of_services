@@ -1,12 +1,12 @@
 // import 'package:catalog_of_services/models/contact.dart';
 // import 'package:flutter/material.dart';
 //
-// class ProfilePage extends StatefulWidget {
+// class ProfileScreen extends StatefulWidget {
 //   @override
-//   _ProfilePageState createState() => _ProfilePageState();
+//   _ProfileScreenState createState() => _ProfileScreenState();
 // }
 //
-// class _ProfilePageState extends State<ProfilePage> {
+// class _ProfileScreenState extends State<ProfileScreen> {
 //   Map data ={};
 //   @override
 //   Widget build(BuildContext context) {

@@ -1,12 +1,10 @@
-import 'package:catalog_of_services/pages/catalog_page.dart';
-import 'package:catalog_of_services/pages/chat_page.dart';
-import 'package:catalog_of_services/pages/pick_user_page.dart';
-import 'package:catalog_of_services/pages/profile_page.dart';
 // import 'package:catalog_of_services/redux/middleware.dart';
 import 'package:catalog_of_services/redux/reducers.dart';
 import 'package:catalog_of_services/redux/store.dart';
+import 'package:catalog_of_services/screens/catalog_screen.dart';
+import 'package:catalog_of_services/screens/contact_screen.dart';
+import 'package:catalog_of_services/screens/pick_user_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:catalog_of_services/pages/contact_page.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -30,11 +28,11 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => PickUserPage(),
-          '/contact': (context) => ContactPage(),
-          '/catalog': (context) => CatalogPage(),
-          // '/chat': (context) => ChatPage(),
-          // '/profile': (context) => ProfilePage()
+          '/': (context) => PickUserScreen(),
+          '/contact': (context) => ContactScreen(),
+          '/catalog': (context) => CatalogScreen(),
+          // '/chat': (context) => ChatScreen(),
+          // '/profile': (context) => ProfileScreen()
         },
       ),
     );
