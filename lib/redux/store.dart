@@ -25,7 +25,7 @@ class AppState {
   }
 
   AppState.initial() {
-    this.user = null;
+    user = null;
     // this.camera = null;
   }
 }

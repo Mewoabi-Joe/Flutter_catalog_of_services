@@ -37,10 +37,13 @@ class UserService {
     }
   }
 
+
   Future<User> createUser(User user) async {
+    // Endpoint is thesame with update user only parameters differ
     try {
       print(user.userPhotoUrl);
       var request = MultipartRequest("POST", Uri.parse(userURL));
+      print('PHOTO URL : ${user.userPhotoUrl}');
       request.files
           .add( MultipartFile.fromBytes("userPhoto",File(user.userPhotoUrl!).readAsBytesSync(),filename: user.userPhotoUrl!.split("/").last));
       request.fields['userNumber'] = user.userNumber.toString();
@@ -69,4 +72,35 @@ class UserService {
 
     }
   }
+
+  Future<User> changeToggleBusinessUser(int userNumber, bool isBusinessUser) async {
+    // Endpoint is thesame with update user only parameters differ
+    try {
+      var request = MultipartRequest("POST", Uri.parse(userURL));
+      request.fields['userNumber'] = userNumber.toString();
+      request.fields['isBusinessAccount'] = isBusinessUser.toString();
+
+      var response = await request.send();
+
+      var res = await Response.fromStream(response);
+      if (res.statusCode == 201) {
+        Map<String, dynamic> body = jsonDecode(res.body);
+        User returnedUser = User.fromJson(body);
+        print('Returned user: ${returnedUser.toString()}');
+        return returnedUser;
+      } else {
+        print('error status: ${res.statusCode}');
+        print('error body: ${jsonDecode(res.body)}');
+        throw "Unable to save user: Server Error";
+      }
+    } catch (e) {
+      print(e);
+      throw "Unable to save user: Client error";
+      // console.log(err.message);
+      // console.log(err.response.data);
+      // console.log(err.response.status);
+
+    }
+  }
+
 }

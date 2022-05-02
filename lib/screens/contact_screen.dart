@@ -22,8 +22,8 @@ class _ContactScreenState extends State<ContactScreen> {
     List<Contact> gottenContacts =
         await contactService.fetchUsersContacts(usersContact);
     setState(() {
-      this.usersContacts = gottenContacts;
-      this.contactsLoaded = true;
+      usersContacts = gottenContacts;
+      contactsLoaded = true;
     });
   }
 
@@ -40,8 +40,8 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Auth contact: $authContact');
-    print('Users contacts: $usersContacts');
+    // print('Auth contact: $authContact');
+    // print('Users contacts: $usersContacts');
     return StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) {
@@ -50,16 +50,23 @@ class _ContactScreenState extends State<ContactScreen> {
                 automaticallyImplyLeading: false,
                 actions: <Widget>[
                   PopupMenuButton<String>(
-                    onSelected: (value) => showInSnackBar(value),
+                    onSelected: (value) => handleSelectedOption(value, state),
                     itemBuilder: (context) => <PopupMenuItem<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'Business',
-                        child: Text('Business'),
-                      ),
+                      if (state.user!.isBusinessAccount!)
+                        const PopupMenuItem<String>(
+                          value: 'Business Tools',
+                          child: Text('Business Tools'),
+                        ),
                       const PopupMenuItem<String>(
                         value: 'New contact',
                         child: Text(
                           'New contact',
+                        ),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'Settings',
+                        child: Text(
+                          'Settings',
                         ),
                       ),
                       const PopupMenuItem<String>(
@@ -79,13 +86,25 @@ class _ContactScreenState extends State<ContactScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       children: [
                         for (int index = 0;
-                            index < this.usersContacts!.length;
+                            index < usersContacts!.length;
                             index++)
                           ListTile(
                             leading: ExcludeSemantics(
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    usersContacts![index].contactPhotoURL!),
+                              child: ClipOval(
+                                // ClipOval Widget with child
+                                // Being an image of specified width and height
+                                // Gives a Circle
+                                // Its left for you to specify the fit to either
+                                //Cover or Contain
+                                //Note to sorround the Image with a container in
+                                // case you use contain in order to give it a
+                                //background color
+                                child: Image.network(
+                                  usersContacts![index].contactPhotoURL!,
+                                  width: 40,
+                                  height: 40,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                             title: Text(
@@ -107,5 +126,15 @@ class _ContactScreenState extends State<ContactScreen> {
   void showInSnackBar(String text) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  handleSelectedOption(String value, AppState state) async {
+    if (value == 'Business Tools') {
+        Navigator.pushNamed(context, '/business_edit');
+    } else if (value == 'Exit') {
+      Navigator.pushReplacementNamed(context, '/');
+    } else if (value == 'Settings') {
+      Navigator.pushNamed(context, '/settings');
+    }
   }
 }

@@ -47,9 +47,11 @@ class _PickUserScreenState extends State<PickUserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Have a tours with a user'),
+        title: Text('Polytech Social - Catalog of services'),
+        centerTitle: true,
       ),
 
       body: StoreConnector<AppState, AppState>(
@@ -115,7 +117,7 @@ class _PickUserScreenState extends State<PickUserScreen> {
                               onChanged: (user){
                                 setState(() {
                                   selectedUser = user as User;
-                                  this.assetImageURL = user.userPhotoUrl;
+                                  assetImageURL = user.userPhotoUrl;
                                 });
 
                               }
@@ -138,6 +140,9 @@ class _PickUserScreenState extends State<PickUserScreen> {
                               onChanged: (value) => setState(() {
                                 chosenName = value;
                               })),
+                          SizedBox(
+                            height: 20,
+                          ),
                           TextFormField(
                             decoration: InputDecoration(
                               filled: true,
@@ -167,7 +172,10 @@ class _PickUserScreenState extends State<PickUserScreen> {
                               });
                             },
                           ),
-                          ElevatedButton(
+                          SizedBox(
+                            height: 15,
+                          ),
+                          IconButton(
                             onPressed: () async {
                               try {
                                 var image = await ImagePicker()
@@ -185,18 +193,30 @@ class _PickUserScreenState extends State<PickUserScreen> {
                               }
                               // StoreProvider.of<AppState>(context).dispatch(UpdateKm(km));
                             },
-                            child: Text("Pick image"),
+                            icon: Icon(Icons.add_a_photo, size: 40,),
                           ),
                         ],
                       )
                     ),
-                          ClipOval(
-                            child: (pickExistingUser && this.assetImageURL != null) ?
-                                Image.network(
-                                    this.assetImageURL!,
-                                  width: 160,
-                                  height: 160,
-                                  fit: BoxFit.cover):(
+                          ClipRRect( // ClipRRect is used if you want a
+                            //rectangular image
+                            //Add the border radius property in order to give
+                            // the image rounded corners.
+                            borderRadius: BorderRadius.circular(15),
+                            child: (pickExistingUser && assetImageURL != null) ?
+                                Container( //Wrapping with Container in order to
+                                  //give background color on extra space left out
+                                  //since I am using contained fit
+                                  //In case I use cover fit no container is needed
+                                  //since the image covers the size specified.
+                                  color: Colors.black,
+                                  child: Image.network(
+                                      assetImageURL!,
+                                    fit: BoxFit.contain,
+                                    width: 160,
+                                    height: 160,
+                                  ),
+                                ):(
                                 image != null
                                     ? Image.file(
                                   image!,
@@ -204,30 +224,34 @@ class _PickUserScreenState extends State<PickUserScreen> {
                                   height: 160,
                                   fit: BoxFit.cover,
                                 )
-                                    : FlutterLogo(
-                                  size: 160,
-                                )
+                                    : null
                             )
 
                           ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              // print(chosenNumber);
-                              // print(chosenName);
-                              // print(chosenBio);
-                              // print(imagePath);
-                              if(pickExistingUser){
-                                StoreProvider.of<AppState>(context).dispatch(UpdateUser(selectedUser));
-                              }else{
-                                User returnedUser = await userService.createUser(User(userName: chosenName, userBio: chosenBio, userNumber: chosenNumber, userPhotoUrl: imagePath));
-                                StoreProvider.of<AppState>(context).dispatch(UpdateUser(returnedUser));
+                          FractionallySizedBox(
+                            widthFactor: 1,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 20)
+                              ),
+                              onPressed: () async {
+                                // print(chosenNumber);
+                                // print(chosenName);
+                                // print(chosenBio);
+                                // print(imagePath);
+                                if(pickExistingUser){
+                                  StoreProvider.of<AppState>(context).dispatch(UpdateUser(selectedUser));
+                                }else{
+                                  User returnedUser = await userService.createUser(User(userName: chosenName, userBio: chosenBio, userNumber: chosenNumber, userPhotoUrl: imagePath));
+                                  StoreProvider.of<AppState>(context).dispatch(UpdateUser(returnedUser));
 
-                              }
-                              Navigator.pushReplacementNamed(context,'/contact', arguments:  {
-                                'userNumber':pickExistingUser?selectedUser!.userNumber.toString():chosenNumber.toString(),
-                              }, );
-                            },
-                            child: Text("Have a tour"),
+                                }
+                                Navigator.pushReplacementNamed(context,'/contact', arguments:  {
+                                  'userNumber':pickExistingUser?selectedUser!.userNumber.toString():chosenNumber.toString(),
+                                }, );
+                              },
+                              child: Text("Have a tour"),
+                            ),
                           ),
                         ],
                       ),

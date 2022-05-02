@@ -15,8 +15,8 @@ class User {
       userName: json['userName'],
       userPhotoUrl: json['userPhotoUrl'],
       userBio: json['userBio'],
-      isPublicAccount: json['isPublicAccount'],
-      isBusinessAccount: json['isBusinessAccount'],
+      isPublicAccount: json['publicAccount'],
+      isBusinessAccount: json['businessAccount'],
       email: json['email'],
     );
   }
