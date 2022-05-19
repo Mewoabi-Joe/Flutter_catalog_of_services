@@ -66,6 +66,31 @@ class _PickUserScreenState extends State<PickUserScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
+                        FractionallySizedBox(
+                        widthFactor: 1,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 20)
+                          ),
+                          onPressed: () async {
+                            // print(chosenNumber);
+                            // print(chosenName);
+                            // print(chosenBio);
+                            // print(imagePath);
+                            if(pickExistingUser){
+                              StoreProvider.of<AppState>(context).dispatch(UpdateUser(selectedUser));
+                            }else{
+                              User returnedUser = await userService.createUser(User(userName: chosenName, userBio: chosenBio, userNumber: chosenNumber, userPhotoUrl: imagePath));
+                              StoreProvider.of<AppState>(context).dispatch(UpdateUser(returnedUser));
+
+                            }
+                            Navigator.pushNamed(context,'/contact', arguments:  {
+                              'userNumber':pickExistingUser?selectedUser!.userNumber.toString():chosenNumber.toString(),
+                            }, );
+                          },
+                          child: Text("Have a tour"),
+                        ),
+                      ),
                           Column(
                             children: [
                               Row(
@@ -228,31 +253,7 @@ class _PickUserScreenState extends State<PickUserScreen> {
                             )
 
                           ),
-                          FractionallySizedBox(
-                            widthFactor: 1,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(vertical: 20)
-                              ),
-                              onPressed: () async {
-                                // print(chosenNumber);
-                                // print(chosenName);
-                                // print(chosenBio);
-                                // print(imagePath);
-                                if(pickExistingUser){
-                                  StoreProvider.of<AppState>(context).dispatch(UpdateUser(selectedUser));
-                                }else{
-                                  User returnedUser = await userService.createUser(User(userName: chosenName, userBio: chosenBio, userNumber: chosenNumber, userPhotoUrl: imagePath));
-                                  StoreProvider.of<AppState>(context).dispatch(UpdateUser(returnedUser));
 
-                                }
-                                Navigator.pushNamed(context,'/contact', arguments:  {
-                                  'userNumber':pickExistingUser?selectedUser!.userNumber.toString():chosenNumber.toString(),
-                                }, );
-                              },
-                              child: Text("Have a tour"),
-                            ),
-                          ),
                         ],
                       ),
                     ),
