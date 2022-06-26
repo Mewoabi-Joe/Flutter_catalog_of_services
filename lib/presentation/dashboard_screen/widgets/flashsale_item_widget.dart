@@ -1,3 +1,4 @@
+import '../../../initial/models/business.dart';
 import '../controller/dashboard_controller.dart';
 import '../models/flashsale_item_model.dart';
 import 'package:business/core/app_export.dart';
@@ -5,13 +6,13 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class FlashsaleItemWidget extends StatelessWidget {
-  FlashsaleItemWidget(this.flashsaleItemModelObj, {this.onTapProduct});
+  FlashsaleItemWidget(this.business);
 
-  FlashsaleItemModel flashsaleItemModelObj;
+  Business?  business;
 
-  var controller = Get.find<DashboardController>();
+  // var controller = Get.find<DashboardController>();
 
-  VoidCallback? onTapProduct;
+  // VoidCallback? onTapProduct;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class FlashsaleItemWidget extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: GestureDetector(
           onTap: () {
-            onTapProduct!();
+            // onTapProduct!();
           },
           child: Container(
             margin: EdgeInsets.only(
@@ -61,8 +62,8 @@ class FlashsaleItemWidget extends StatelessWidget {
                         16.00,
                       ),
                     ),
-                    child: Image.asset(
-                      ImageConstant.imgProductimage,
+                    child: Image.network(
+                      business!.threeImageUrls![0],
                       height: getSize(
                         109.00,
                       ),
@@ -70,7 +71,7 @@ class FlashsaleItemWidget extends StatelessWidget {
                         109.00,
                       ),
                       fit: BoxFit.fill,
-                    ),
+                    )
                   ),
                 ),
                 Container(

@@ -69,6 +69,8 @@ import 'package:business/presentation/app_navigation_screen/app_navigation_scree
 import 'package:business/presentation/app_navigation_screen/binding/app_navigation_binding.dart';
 import 'package:get/get.dart';
 
+import '../initial/screens/list_business_screen.dart';
+
 class AppRoutes {
   static String dashboardScreen = '/dashboard_screen';
 
@@ -99,6 +101,8 @@ class AppRoutes {
   static String searchResult1Screen = '/search_result1_screen';
 
   static String listCategoryScreen = '/list_category_screen';
+
+  static String listBusinessScreen = '/list_business_screen';
 
   static String shortByScreen = '/short_by_screen';
 
@@ -248,6 +252,11 @@ class AppRoutes {
       bindings: [
         ListCategoryBinding(),
       ],
+    ),
+    GetPage(
+      name: listBusinessScreen,
+      page: () => ListBusinessScreen(),
+
     ),
     GetPage(
       name: shortByScreen,

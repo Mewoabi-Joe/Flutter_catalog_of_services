@@ -20,6 +20,11 @@ class _CategoryPickScreenState extends State<CategoryPickScreen> {
     'productivity',
     'cosmetics',
     'houses',
+    'electronics',
+    'sales',
+    'shoes',
+    'fashion',
+    'delivery',
     'groceries'
   ];
 

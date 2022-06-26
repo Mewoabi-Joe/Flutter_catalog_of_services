@@ -5,18 +5,18 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class Group29ItemWidget extends StatelessWidget {
-  Group29ItemWidget(this.group29ItemModelObj);
+  Group29ItemWidget(this.itemImage);
 
-  Group29ItemModel group29ItemModelObj;
+  String itemImage;
 
-  var controller = Get.find<ProductDetailController>();
+  // var controller = Get.find<ProductDetailController>();
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Image.asset(
-        ImageConstant.imgProductimage9,
+      child: Image.network(
+        itemImage,
         height: getVerticalSize(
           238.00,
         ),
