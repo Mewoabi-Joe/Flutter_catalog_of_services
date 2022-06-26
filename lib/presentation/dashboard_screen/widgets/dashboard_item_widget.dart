@@ -1,3 +1,4 @@
+import '../../../initial/models/item.dart';
 import '../controller/dashboard_controller.dart';
 import '../models/dashboard_item_model.dart';
 import 'package:business/core/app_export.dart';
@@ -6,15 +7,18 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 // ignore: must_be_immutable
 class DashboardItemWidget extends StatelessWidget {
-  DashboardItemWidget(this.dashboardItemModelObj);
+  DashboardItemWidget(this.item);
 
-  DashboardItemModel dashboardItemModelObj;
+  Item? item;
+  // DashboardItemModel dashboardItemModelObj;
 
   var controller = Get.find<DashboardController>();
 
   @override
   Widget build(BuildContext context) {
-    return Align(
+    return InkWell(onTap: ()=> Get.toNamed(AppRoutes.productDetailScreen, parameters: {'itemName':item!.itemName!,
+    'itemImage':item!.itemImage!, 'itemDescription': item!.itemDescription!, 'itemRating':item!.itemRating!.toString(),
+    'itemPrice': item!.itemPrice.toString(), 'catalogId':item!.catalogId!, 'itemId': item!.itemId!}),child: Align(
       alignment: Alignment.center,
       child: Container(
         decoration: BoxDecoration(
@@ -48,8 +52,8 @@ class DashboardItemWidget extends StatelessWidget {
                   16.00,
                 ),
               ),
-              child: Image.asset(
-                ImageConstant.imgImageproduct,
+              child: Image.network(
+                item!.itemImage!,
                 height: getSize(
                   133.00,
                 ),
@@ -89,7 +93,7 @@ class DashboardItemWidget extends StatelessWidget {
                           133.00,
                         ),
                         child: Text(
-                          "msg_nike_air_max_27".tr,
+                          item!.itemName!,
                           maxLines: null,
                           textAlign: TextAlign.left,
                           style: AppStyle.textStylePoppinsbold12.copyWith(
@@ -110,7 +114,7 @@ class DashboardItemWidget extends StatelessWidget {
                           ),
                         ),
                         child: RatingBar.builder(
-                          initialRating: 4,
+                          initialRating: item!.itemRating!,
                           minRating: 0,
                           direction: Axis.horizontal,
                           allowHalfRating: false,
@@ -152,7 +156,7 @@ class DashboardItemWidget extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            "lbl_299_43".tr,
+                            '${item!.itemPrice!.toString()} Frs CFA',
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.left,
                             style: AppStyle.textStylePoppinsbold121.copyWith(
@@ -163,44 +167,44 @@ class DashboardItemWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: getVerticalSize(
-                              4.00,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text(
-                                "lbl_534_33".tr,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style:
-                                    AppStyle.textStylePoppinsregular10.copyWith(
-                                  fontSize: getFontSize(
-                                    10,
-                                  ),
-                                  letterSpacing: 0.50,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                              Text(
-                                "lbl_24_off".tr,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.textStylePoppinsbold10.copyWith(
-                                  fontSize: getFontSize(
-                                    10,
-                                  ),
-                                  letterSpacing: 0.50,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //     top: getVerticalSize(
+                        //       4.00,
+                        //     ),
+                        //   ),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     crossAxisAlignment: CrossAxisAlignment.center,
+                        //     mainAxisSize: MainAxisSize.max,
+                        //     children: [
+                        //       Text(
+                        //         "lbl_534_33".tr,
+                        //         overflow: TextOverflow.ellipsis,
+                        //         textAlign: TextAlign.left,
+                        //         style:
+                        //             AppStyle.textStylePoppinsregular10.copyWith(
+                        //           fontSize: getFontSize(
+                        //             10,
+                        //           ),
+                        //           letterSpacing: 0.50,
+                        //           decoration: TextDecoration.lineThrough,
+                        //         ),
+                        //       ),
+                        //       Text(
+                        //         "lbl_24_off".tr,
+                        //         overflow: TextOverflow.ellipsis,
+                        //         textAlign: TextAlign.left,
+                        //         style: AppStyle.textStylePoppinsbold10.copyWith(
+                        //           fontSize: getFontSize(
+                        //             10,
+                        //           ),
+                        //           letterSpacing: 0.50,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -210,6 +214,6 @@ class DashboardItemWidget extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),);
   }
 }

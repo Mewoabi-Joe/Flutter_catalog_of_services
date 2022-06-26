@@ -20,8 +20,8 @@ class BusinessEditScreen extends StatefulWidget {
 }
 
 class _BusinessEditScreenState extends State<BusinessEditScreen> {
-  UserService userService = UserService();
-  BusinessService businessService = BusinessService();
+BusinessService businessService = BusinessService();
+UserService userService = UserService();
   bool saving = false;
   File? image;
   String? imagePath;

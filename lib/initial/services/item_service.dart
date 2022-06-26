@@ -65,6 +65,35 @@ class ItemService {
     }
   }
 
+  Future<List<Item>> fetchSixItemsFromCatalogs() async {
+    try {
+      Response res = await get(Uri.parse('$itemURL/six_items'));
+
+      if (res.statusCode == 200) {
+        List<dynamic> body = jsonDecode(res.body);
+
+        List<Item> items = body
+            .map(
+              (dynamic item) => Item.fromJson(item),
+        )
+            .toList();
+
+        return items;
+      } else {
+        print('error status: ${res.statusCode}');
+        print('error body: ${jsonDecode(res.body)}');
+        throw "Unable to retrieve Items: Server Error";
+      }
+    } catch (e) {
+      print(e);
+      throw "Unable to retrieve items: Client error";
+      // console.log(err.message);
+      // console.log(err.response.data);
+      // console.log(err.response.status);
+
+    }
+  }
+
   Future<Item> createOrUpdateItem(Item item) async {
     // Endpoint is thesame with update item only parameters differ
     try {

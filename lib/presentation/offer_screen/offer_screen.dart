@@ -1,3 +1,5 @@
+import '../../initial/models/item.dart';
+import '../../initial/services/item_service.dart';
 import '../offer_screen/widgets/offer_screen_item_widget.dart';
 import 'controller/offer_controller.dart';
 import 'models/offer_screen_item_model.dart';
@@ -5,7 +7,27 @@ import 'package:business/core/app_export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class OfferScreen extends GetWidget<OfferController> {
+class OfferScreen extends StatefulWidget{
+  @override
+  State<OfferScreen> createState() => _OfferScreenState();
+}
+
+class _OfferScreenState extends State<OfferScreen> {
+  List<Item>? items;
+  ItemService itemService = ItemService();
+  void getCatalogItems () async{
+    List<Item> items =  await itemService.fetchCatalogsItems(Get.parameters['catalogId']!);
+    setState(() {
+      this.items = items;
+    });
+  }
+
+  @override
+  void initState() {
+    getCatalogItems();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -41,15 +63,18 @@ class OfferScreen extends GetWidget<OfferController> {
                                               Container(
                                                   height: getSize(24.00),
                                                   width: getSize(24.00),
-                                                  child: SvgPicture.asset(
-                                                      ImageConstant.imgLefticon,
-                                                      fit: BoxFit.fill)),
+                                                  child: InkWell(
+                                                    onTap: () => Get.back(),
+                                                    child: SvgPicture.asset(
+                                                        ImageConstant.imgLefticon,
+                                                        fit: BoxFit.fill),
+                                                  )),
                                               Padding(
                                                   padding: EdgeInsets.only(
                                                       left: getHorizontalSize(
                                                           12.00)),
                                                   child: Text(
-                                                      "msg_super_flash_sal2".tr,
+                                                      Get.parameters['catalogName']!,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       textAlign: TextAlign.left,
@@ -95,9 +120,8 @@ class OfferScreen extends GetWidget<OfferController> {
                                               Align(
                                                   alignment:
                                                       Alignment.centerLeft,
-                                                  child: Image.asset(
-                                                      ImageConstant
-                                                          .imgPromotionimage,
+                                                  child: Image.network(
+                                                      Get.parameters['catalogFirstImageUrl']!,
                                                       height: getVerticalSize(
                                                           206.00),
                                                       width: getHorizontalSize(
@@ -134,8 +158,7 @@ class OfferScreen extends GetWidget<OfferController> {
                                                                     getHorizontalSize(
                                                                         209.00),
                                                                 child: Text(
-                                                                    "msg_super_flash_sal"
-                                                                        .tr,
+                                                                    Get.parameters['catalogName']!,
                                                                     maxLines:
                                                                         null,
                                                                     textAlign:
@@ -147,119 +170,35 @@ class OfferScreen extends GetWidget<OfferController> {
                                                                             fontSize:
                                                                                 getFontSize(24),
                                                                             letterSpacing: 0.50))),
-                                                            Padding(
-                                                                padding: EdgeInsets.only(
-                                                                    top: getVerticalSize(
-                                                                        29.00),
-                                                                    right: getHorizontalSize(
-                                                                        10.00)),
-                                                                child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .start,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .center,
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .max,
-                                                                    children: [
-                                                                      Container(
-                                                                          alignment: Alignment
-                                                                              .center,
-                                                                          height: getVerticalSize(
-                                                                              41.00),
-                                                                          width: getHorizontalSize(
-                                                                              42.00),
-                                                                          decoration: AppDecoration
-                                                                              .textStylePoppinsbold16,
-                                                                          child: Text(
-                                                                              "lbl_08".tr,
-                                                                              textAlign: TextAlign.center,
-                                                                              style: AppStyle.textStylePoppinsbold16.copyWith(fontSize: getFontSize(16), letterSpacing: 0.50))),
-                                                                      Padding(
-                                                                          padding: EdgeInsets.only(
-                                                                              left: getHorizontalSize(
-                                                                                  4.00),
-                                                                              top: getVerticalSize(
-                                                                                  10.00),
-                                                                              bottom: getVerticalSize(
-                                                                                  10.00)),
-                                                                          child: Text(
-                                                                              "lbl".tr,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              textAlign: TextAlign.center,
-                                                                              style: AppStyle.textStylePoppinsbold14.copyWith(fontSize: getFontSize(14), letterSpacing: 0.07))),
-                                                                      Padding(
-                                                                          padding: EdgeInsets.only(
-                                                                              left: getHorizontalSize(
-                                                                                  4.00)),
-                                                                          child: Container(
-                                                                              alignment: Alignment.center,
-                                                                              height: getVerticalSize(41.00),
-                                                                              width: getHorizontalSize(42.00),
-                                                                              decoration: AppDecoration.textStylePoppinsbold16,
-                                                                              child: Text("lbl_34".tr, textAlign: TextAlign.center, style: AppStyle.textStylePoppinsbold16.copyWith(fontSize: getFontSize(16), letterSpacing: 0.50)))),
-                                                                      Padding(
-                                                                          padding: EdgeInsets.only(
-                                                                              left: getHorizontalSize(
-                                                                                  4.00),
-                                                                              top: getVerticalSize(
-                                                                                  10.00),
-                                                                              bottom: getVerticalSize(
-                                                                                  10.00)),
-                                                                          child: Text(
-                                                                              "lbl".tr,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              textAlign: TextAlign.center,
-                                                                              style: AppStyle.textStylePoppinsbold14.copyWith(fontSize: getFontSize(14), letterSpacing: 0.07))),
-                                                                      Padding(
-                                                                          padding: EdgeInsets.only(
-                                                                              left: getHorizontalSize(
-                                                                                  4.00)),
-                                                                          child: Container(
-                                                                              alignment: Alignment.center,
-                                                                              height: getVerticalSize(41.00),
-                                                                              width: getHorizontalSize(42.00),
-                                                                              decoration: AppDecoration.textStylePoppinsbold16,
-                                                                              child: Text("lbl_52".tr, textAlign: TextAlign.center, style: AppStyle.textStylePoppinsbold16.copyWith(fontSize: getFontSize(16), letterSpacing: 0.50))))
-                                                                    ]))
-                                                          ])))
+                                                           ])))
                                             ])),
                                     Padding(
                                         padding: EdgeInsets.only(
                                             left: getHorizontalSize(16.00),
                                             top: getVerticalSize(16.00),
                                             right: getHorizontalSize(16.00)),
-                                        child: Obx(() => GridView.builder(
+                                        child:  items == null? Center(child: CircularProgressIndicator(),): GridView.builder(
                                             shrinkWrap: true,
                                             gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                                    mainAxisExtent: getVerticalSize(
-                                                        283.00),
-                                                    crossAxisCount: 2,
-                                                    mainAxisSpacing:
-                                                        getHorizontalSize(
-                                                            13.00),
-                                                    crossAxisSpacing:
-                                                        getHorizontalSize(
-                                                            13.00)),
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                mainAxisExtent: getVerticalSize(
+                                                    283.00),
+                                                crossAxisCount: 2,
+                                                mainAxisSpacing:
+                                                getHorizontalSize(
+                                                    13.00),
+                                                crossAxisSpacing:
+                                                getHorizontalSize(
+                                                    13.00)),
                                             physics:
-                                                NeverScrollableScrollPhysics(),
-                                            itemCount: controller
-                                                .offerModelObj
-                                                .value
-                                                .offerScreenItemList
-                                                .length,
+                                            NeverScrollableScrollPhysics(),
+                                            itemCount: items!.length,
                                             itemBuilder: (context, index) {
-                                              OfferScreenItemModel model =
-                                                  controller.offerModelObj.value
-                                                          .offerScreenItemList[
-                                                      index];
+
                                               return OfferScreenItemWidget(
-                                                  model,
-                                                  onTapProduct: onTapProduct);
-                                            })))
+                                                  items![index]
+                                                  );
+                                            }))
                                   ])))
                     ]))));
   }

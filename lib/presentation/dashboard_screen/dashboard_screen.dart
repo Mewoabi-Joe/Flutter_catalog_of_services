@@ -4,7 +4,10 @@ import 'package:business/initial/models/item.dart';
 import 'package:business/initial/services/business_service.dart';
 import 'package:business/initial/services/catalog_service.dart';
 import 'package:business/initial/services/item_service.dart';
+import 'package:business/initial/services/user_service.dart';
 
+import '../../initial/models/user.dart';
+import '../../initial/screens/businesses_item_widget.dart';
 import '../dashboard_screen/widgets/categories_item_widget.dart';
 import '../dashboard_screen/widgets/dashboard_item_widget.dart';
 import '../dashboard_screen/widgets/flashsale_item_widget.dart';
@@ -22,49 +25,71 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class DashboardScreen extends GetWidget<DashboardController> {
-  // bool categoriesLoaded = false;
-  // bool itemsLoaded = false;
-  // bool businessesLoaded = false;
-  // bool allLoaded = false;
-  //
-  // List<Catalog>? catalogs;
-  // List<Business>? businesses;
-  // List<Item>? items;
-  //
-  // final CatalogService catalogService = CatalogService();
-  // final BusinessService businessService = BusinessService();
-  // final ItemService itemService = ItemService();
-  //
-  // Map authContact = {};
-  //
-  // void fetchBusinesses() async {
-  //   List<Business> gottenBusinesses =
-  //   await businessService.fetchAllBusinessesOfUsers();
-  //   setState(() {
-  //     businesses = gottenBusinesses;
-  //     businessesLoaded = true;
-  //   });
-  //   setSta
-  // }
-  //
-  // @override
-  // void didChangeDependencies() {
-  //   // TODO: implement didChangeDependencies
-  //   if (!contactsLoaded) {
-  //     super.didChangeDependencies();
-  //     var theMap = ModalRoute.of(context)!.settings.arguments;
-  //     authContact = theMap == null ? {} : theMap as Map;
-  //     getUserTheUsersContacts(int.parse(authContact['userNumber']));
-  //   }
-  // }
+class DashboardScreen extends StatefulWidget {
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+
+  CatalogService catalogService = CatalogService();
+  ItemService itemService = ItemService();
+  BusinessService businessService = BusinessService();
+  UserService userService = UserService();
+  List<Item>? sixItems;
+  List<Business>? businesses;
+  List<Catalog>? catalogs;
+  List<User>? users;
+  bool everyThingLoaded = false;
+
+  void getFiveItemsCategoriesBusinesses() async {
+    List<Item> sixItems = await itemService.fetchSixItemsFromCatalogs();
+    setState(() {
+      this.sixItems = sixItems;
+    });
+    List<Catalog> catalogs = await catalogService
+        .fetchAllCatalogsOfBusinesses();
+    setState(() {
+      this.catalogs = catalogs;
+    });
+    List<Business> businesses = await businessService
+        .fetchAllBusinessesOfUsers();
+    setState(() {
+      this.businesses = businesses;
+    });
+    List<User> users = await userService.fetchUsers();
+    setState(() {
+      this.users = users;
+    });
+
+    setState(() {
+      this.everyThingLoaded = true;
+    });
+    // print("gottenBusinesses: $usersBusinesses");
+  }
+
+  User getUserWithBusiness(int userNumber) {
+    return users!.firstWhere((user) => user.userNumber == userNumber);
+  }
+
+  @override
+  void initState() {
+    getFiveItemsCategoriesBusinesses();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('sixItems: \n ${sixItems}');
+    // print('businesses: \n ${controller.businesses}');
+    // print('catalogs: \n ${controller.catalogs}');
+    // print('everyThingLoaded: \n ${controller.everyThingLoaded}');
     return SafeArea(
         child: Scaffold(
             backgroundColor: ColorConstant.whiteA700,
-            body: Column(children: [
+            body: !everyThingLoaded ? Center(
+              child: CircularProgressIndicator(),) : Column(children: [
               Expanded(
                   child: Container(
                       decoration: BoxDecoration(color: ColorConstant.whiteA700),
@@ -99,7 +124,8 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                           ),
                                           Expanded(
                                             child: Container(
-                                                width: getHorizontalSize(123.00),
+                                                width: getHorizontalSize(
+                                                    123.00),
                                                 margin: EdgeInsets.only(
                                                     top: getVerticalSize(1.00),
                                                     bottom:
@@ -253,76 +279,69 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                   getHorizontalSize(16.00),
                                                   right:
                                                   getHorizontalSize(16.00)),
-                                              child: Obx(() =>
-                                                  CarouselSlider.builder(
-                                                      options: CarouselOptions(
-                                                          height:
-                                                          getVerticalSize(
-                                                              206.00),
-                                                          initialPage: 0,
-                                                          autoPlay: true,
-                                                          viewportFraction: 1.0,
-                                                          enableInfiniteScroll:
-                                                          false,
-                                                          scrollDirection:
-                                                          Axis.horizontal,
-                                                          onPageChanged:
-                                                              (index, reason) {
-                                                            controller
-                                                                .silderIndex
-                                                                .value = index;
-                                                          }),
-                                                      itemCount: controller
-                                                          .dashboardModelObj
-                                                          .value
-                                                          .group18ItemList
-                                                          .length,
-                                                      itemBuilder: (context,
-                                                          index, realIndex) {
-                                                        Group18ItemModel model =
-                                                        controller
-                                                            .dashboardModelObj
-                                                            .value
-                                                            .group18ItemList[index];
-                                                        return Group18ItemWidget(
-                                                            model);
-                                                      }))),
+                                              child: CarouselSlider.builder(
+                                                  options: CarouselOptions(
+                                                      height:
+                                                      getVerticalSize(
+                                                          206.00),
+                                                      initialPage: 0,
+                                                      autoPlay: true,
+                                                      viewportFraction: 1.0,
+                                                      enableInfiniteScroll:
+                                                      false,
+                                                      scrollDirection:
+                                                      Axis.horizontal,
+                                                      onPageChanged:
+                                                          (index, reason) {
+                                                        // controller
+                                                        //     .silderIndex
+                                                        //     .value = index;
+                                                      }),
+                                                  itemCount: 6,
+                                                  // controller
+                                                  //     .dashboardModelObj
+                                                  //     .value
+                                                  //     .group18ItemList
+                                                  //     .length,
+                                                  itemBuilder: (context,
+                                                      index, realIndex) {
+                                                    // Group18ItemModel model =
+                                                    // controller
+                                                    //     .dashboardModelObj
+                                                    //     .value
+                                                    //     .group18ItemList[index];
+                                                    return Group18ItemWidget(
+                                                        sixItems![index]);
+                                                  })),
                                           Align(
                                               alignment: Alignment.center,
-                                              child: Obx(() =>
-                                                  Container(
-                                                      height: getVerticalSize(
-                                                          8.00),
-                                                      margin: EdgeInsets.only(
-                                                          left: getHorizontalSize(
-                                                              16.00),
-                                                          top: getVerticalSize(
-                                                              16.00),
-                                                          right: getHorizontalSize(
-                                                              16.00)),
-                                                      child: AnimatedSmoothIndicator(
-                                                          activeIndex: controller
-                                                              .silderIndex
-                                                              .value,
-                                                          count: controller
-                                                              .dashboardModelObj
-                                                              .value
-                                                              .group18ItemList
-                                                              .length,
-                                                          axisDirection:
-                                                          Axis.horizontal,
-                                                          effect: ScrollingDotsEffect(
-                                                              spacing: 8,
-                                                              activeDotColor:
-                                                              ColorConstant
-                                                                  .lightBlueA200,
-                                                              dotColor:
-                                                              ColorConstant
-                                                                  .blue50,
-                                                              dotHeight: getVerticalSize(
-                                                                  8.00),
-                                                              dotWidth: getHorizontalSize(
-                                                                  8.00)))))),
+                                              child: Container(
+                                                  height: getVerticalSize(
+                                                      8.00),
+                                                  margin: EdgeInsets.only(
+                                                      left: getHorizontalSize(
+                                                          16.00),
+                                                      top: getVerticalSize(
+                                                          16.00),
+                                                      right: getHorizontalSize(
+                                                          16.00)),
+                                                  child: AnimatedSmoothIndicator(
+                                                      activeIndex: 0,
+                                                      count: 1,
+                                                      axisDirection:
+                                                      Axis.horizontal,
+                                                      effect: ScrollingDotsEffect(
+                                                          spacing: 8,
+                                                          activeDotColor:
+                                                          ColorConstant
+                                                              .lightBlueA200,
+                                                          dotColor:
+                                                          ColorConstant
+                                                              .blue50,
+                                                          dotHeight: getVerticalSize(
+                                                              8.00),
+                                                          dotWidth: getHorizontalSize(
+                                                              8.00))))),
                                           Padding(
                                               padding: EdgeInsets.only(
                                                   top: getVerticalSize(24.00)),
@@ -391,42 +410,31 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                   getVerticalSize(120.00),
                                                   width:
                                                   getHorizontalSize(359.00),
-                                                  child: Obx(() =>
-                                                      ListView.builder(
-                                                          padding: EdgeInsets
-                                                              .only(
-                                                              left:
-                                                              getHorizontalSize(
-                                                                  16.00),
-                                                              top:
-                                                              getVerticalSize(
-                                                                  12.00)),
-                                                          scrollDirection:
-                                                          Axis.horizontal,
-                                                          physics:
-                                                          BouncingScrollPhysics(),
-                                                          itemCount: controller
-                                                              .dashboardModelObj
-                                                              .value
-                                                              .categoriesItemList
-                                                              .length,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            CategoriesItemModel
-                                                            model =
-                                                            controller
-                                                                .dashboardModelObj
-                                                                .value
-                                                                .categoriesItemList[index];
-                                                            return CategoriesItemWidget(
-                                                                model);
-                                                          })))),
+                                                  child: ListView.builder(
+                                                      padding: EdgeInsets
+                                                          .only(
+                                                          left:
+                                                          getHorizontalSize(
+                                                              16.00),
+                                                          top:
+                                                          getVerticalSize(
+                                                              12.00)),
+                                                      scrollDirection:
+                                                      Axis.horizontal,
+                                                      physics:
+                                                      BouncingScrollPhysics(),
+                                                      itemCount: catalogs!.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return CategoriesItemWidget(
+                                                            catalogs![index]);
+                                                      }))),
                                           Align(
                                               alignment: Alignment.center,
                                               child: GestureDetector(
-                                                  onTap: () {
-                                                    onTapFlashsalehead();
-                                                  },
+                                                  // onTap: () {
+                                                  //   onTapFlashsalehead();
+                                                  // },
                                                   child: Padding(
                                                       padding: EdgeInsets.only(
                                                           left:
@@ -448,7 +456,7 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                           MainAxisSize.max,
                                                           children: [
                                                             Text(
-                                                                "lbl_flash_sale"
+                                                                "business"
                                                                     .tr,
                                                                 overflow:
                                                                 TextOverflow
@@ -464,63 +472,52 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                                         14),
                                                                     letterSpacing:
                                                                     0.50)),
-                                                            Text(
-                                                                "lbl_see_more"
-                                                                    .tr,
-                                                                overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                                textAlign:
-                                                                TextAlign
-                                                                    .right,
-                                                                style: AppStyle
-                                                                    .textStylePoppinsbold142
-                                                                    .copyWith(
-                                                                    fontSize:
-                                                                    getFontSize(
-                                                                        14),
-                                                                    letterSpacing:
-                                                                    0.50))
+                                                            // Text(
+                                                            //     'more business',
+                                                            //     overflow:
+                                                            //     TextOverflow
+                                                            //         .ellipsis,
+                                                            //     textAlign:
+                                                            //     TextAlign
+                                                            //         .right,
+                                                            //     style: AppStyle
+                                                            //         .textStylePoppinsbold142
+                                                            //         .copyWith(
+                                                            //         fontSize:
+                                                            //         getFontSize(
+                                                            //             14),
+                                                            //         letterSpacing:
+                                                            //         0.50))
                                                           ])))),
                                           Align(
                                               alignment: Alignment.centerRight,
                                               child: Container(
                                                   height:
-                                                  getVerticalSize(250.00),
+                                                  getVerticalSize(120.00),
                                                   width:
-                                                  getHorizontalSize(455.00),
-                                                  child: Obx(() =>
-                                                      ListView.builder(
-                                                          padding: EdgeInsets
-                                                              .only(
-                                                              left:
-                                                              getHorizontalSize(
-                                                                  16.00),
-                                                              top:
-                                                              getVerticalSize(
-                                                                  12.00)),
-                                                          scrollDirection:
-                                                          Axis.horizontal,
-                                                          physics:
-                                                          BouncingScrollPhysics(),
-                                                          itemCount: controller
-                                                              .dashboardModelObj
-                                                              .value
-                                                              .flashsaleItemList
-                                                              .length,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            FlashsaleItemModel
-                                                            model =
-                                                            controller
-                                                                .dashboardModelObj
-                                                                .value
-                                                                .flashsaleItemList[index];
-                                                            return FlashsaleItemWidget(
-                                                                model,
-                                                                onTapProduct:
-                                                                onTapProduct);
-                                                          })))),
+                                                  getHorizontalSize(359.00),
+                                                  child: ListView.builder(
+                                                      padding: EdgeInsets
+                                                          .only(
+                                                          left:
+                                                          getHorizontalSize(
+                                                              16.00),
+                                                          top:
+                                                          getVerticalSize(
+                                                              12.00)),
+                                                      scrollDirection:
+                                                      Axis.horizontal,
+                                                      physics:
+                                                      BouncingScrollPhysics(),
+                                                      itemCount: businesses!.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return BusinessesItemWidget(
+                                                            businesses![index],
+                                                            getUserWithBusiness(
+                                                                businesses![index]
+                                                                    .userNumber!));
+                                                      }))),
                                           Align(
                                               alignment: Alignment.center,
                                               child: Padding(
@@ -555,58 +552,80 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                                     14),
                                                                 letterSpacing:
                                                                 0.50)),
-                                                        Text("lbl_see_more".tr,
-                                                            overflow:
-                                                            TextOverflow
-                                                                .ellipsis,
-                                                            textAlign:
-                                                            TextAlign.right,
-                                                            style: AppStyle
-                                                                .textStylePoppinsbold142
-                                                                .copyWith(
-                                                                fontSize:
-                                                                getFontSize(
-                                                                    14),
-                                                                letterSpacing:
-                                                                0.50))
+                                                        // Text("lbl_see_more".tr,
+                                                        //     overflow:
+                                                        //     TextOverflow
+                                                        //         .ellipsis,
+                                                        //     textAlign:
+                                                        //     TextAlign.right,
+                                                        //     style: AppStyle
+                                                        //         .textStylePoppinsbold142
+                                                        //         .copyWith(
+                                                        //         fontSize:
+                                                        //         getFontSize(
+                                                        //             14),
+                                                        //         letterSpacing:
+                                                        //         0.50))
                                                       ]))),
-                                          Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Container(
-                                                  height:
-                                                  getVerticalSize(250.00),
-                                                  width:
-                                                  getHorizontalSize(455.00),
-                                                  child: Obx(() =>
-                                                      ListView.builder(
-                                                          padding: EdgeInsets
-                                                              .only(
-                                                              left:
-                                                              getHorizontalSize(
-                                                                  16.00),
-                                                              top:
-                                                              getVerticalSize(
-                                                                  12.00)),
-                                                          scrollDirection:
-                                                          Axis.horizontal,
-                                                          physics:
-                                                          BouncingScrollPhysics(),
-                                                          itemCount: controller
-                                                              .dashboardModelObj
-                                                              .value
-                                                              .megasaleItemList
-                                                              .length,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            MegasaleItemModel
-                                                            model =
-                                                            controller
-                                                                .dashboardModelObj
-                                                                .value
-                                                                .megasaleItemList[index];
-                                                            return MegasaleItemWidget(
-                                                                model);
-                                                          })))),
+                                          // Align(
+                                          //     alignment: Alignment.centerRight,
+                                          //     child: Container(
+                                          //         height:
+                                          //         getVerticalSize(250.00),
+                                          //         width:
+                                          //         getHorizontalSize(455.00),
+                                          //         child: Obx(() =>
+                                          //             ListView.builder(
+                                          //                 padding: EdgeInsets
+                                          //                     .only(
+                                          //                     left:
+                                          //                     getHorizontalSize(
+                                          //                         16.00),
+                                          //                     top:
+                                          //                     getVerticalSize(
+                                          //                         12.00)),
+                                          //                 scrollDirection:
+                                          //                 Axis.horizontal,
+                                          //                 physics:
+                                          //                 BouncingScrollPhysics(),
+                                          //                 itemCount: controller
+                                          //                     .dashboardModelObj
+                                          //                     .value
+                                          //                     .megasaleItemList
+                                          //                     .length,
+                                          //                 itemBuilder:
+                                          //                     (context, index) {
+                                          //                   MegasaleItemModel
+                                          //                   model =
+                                          //                   controller
+                                          //                       .dashboardModelObj
+                                          //                       .value
+                                          //                       .megasaleItemList[index];
+                                          //                   return MegasaleItemWidget(
+                                          //                       model);
+                                          //                 })))),
+                                          InkWell(
+                                              onTap: ()=> Get.toNamed(AppRoutes.productDetailScreen, parameters: {'itemName':sixItems![6].itemName!,
+                                                'itemImage':sixItems![6].itemImage!, 'itemDescription': sixItems![6].itemDescription!, 'itemRating':sixItems![6].itemRating!.toString(),
+                                                'itemPrice': sixItems![6].itemPrice.toString(), 'catalogId':sixItems![6].catalogId!, 'itemId': sixItems![6].itemId!}),
+                                            child: Align(
+                                                alignment: Alignment.center,
+                                                child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: getHorizontalSize(
+                                                            16.00),
+                                                        top: getVerticalSize(
+                                                            29.00),
+                                                        right: getHorizontalSize(
+                                                            16.00)),
+                                                    child: Image.network(
+                                                        sixItems![6].itemImage!,
+                                                        height: getVerticalSize(
+                                                            206.00),
+                                                        width: getHorizontalSize(
+                                                            343.00),
+                                                        fit: BoxFit.fill))),
+                                          ),
                                           Align(
                                               alignment: Alignment.center,
                                               child: Padding(
@@ -614,59 +633,37 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                       left: getHorizontalSize(
                                                           16.00),
                                                       top: getVerticalSize(
-                                                          29.00),
-                                                      right: getHorizontalSize(
-                                                          16.00)),
-                                                  child: Image.asset(
-                                                      ImageConstant
-                                                          .imgRecomendedprod,
-                                                      height: getVerticalSize(
-                                                          206.00),
-                                                      width: getHorizontalSize(
-                                                          343.00),
-                                                      fit: BoxFit.fill))),
-                                          Align(
-                                              alignment: Alignment.center,
-                                              child: Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: getHorizontalSize(
-                                                          16.00),
-                                                      top: getVerticalSize(
                                                           16.00),
                                                       right: getHorizontalSize(
                                                           16.00)),
-                                                  child: Obx(() =>
-                                                      GridView.builder(
-                                                          shrinkWrap: true,
-                                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                              mainAxisExtent:
-                                                              getVerticalSize(
-                                                                  283.00),
-                                                              crossAxisCount: 2,
-                                                              mainAxisSpacing:
-                                                              getHorizontalSize(
-                                                                  13.00),
-                                                              crossAxisSpacing:
-                                                              getHorizontalSize(
-                                                                  13.00)),
-                                                          physics:
-                                                          NeverScrollableScrollPhysics(),
-                                                          itemCount: controller
-                                                              .dashboardModelObj
-                                                              .value
-                                                              .dashboardItemList
-                                                              .length,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            DashboardItemModel
-                                                            model =
-                                                            controller
-                                                                .dashboardModelObj
-                                                                .value
-                                                                .dashboardItemList[index];
-                                                            return DashboardItemWidget(
-                                                                model);
-                                                          })))),
+                                                  child: GridView.builder(
+                                                      shrinkWrap: true,
+                                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                          mainAxisExtent:
+                                                          getVerticalSize(
+                                                              283.00),
+                                                          crossAxisCount: 2,
+                                                          mainAxisSpacing:
+                                                          getHorizontalSize(
+                                                              13.00),
+                                                          crossAxisSpacing:
+                                                          getHorizontalSize(
+                                                              13.00)),
+                                                      physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                      itemCount: 4,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        // DashboardItemModel
+                                                        // model =
+                                                        // controller
+                                                        //     .dashboardModelObj
+                                                        //     .value
+                                                        //     .dashboardItemList[index];
+                                                        return DashboardItemWidget(
+                                                            sixItems![index +
+                                                                7]);
+                                                      }))),
                                           Padding(
                                               padding: EdgeInsets.only(
                                                   top: getVerticalSize(13.00)),
@@ -680,210 +677,210 @@ class DashboardScreen extends GetWidget<DashboardController> {
                                                   children: []))
                                         ])))
                           ]))),
-              Container(
-                  height: getVerticalSize(66.00),
-                  width: size.width,
-                  decoration: BoxDecoration(color: ColorConstant.whiteA700),
-                  child: Stack(children: [
-                    Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                            padding:
-                            EdgeInsets.only(top: getVerticalSize(10.00)),
-                            child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                            padding: EdgeInsets.only(
-                                                left: getHorizontalSize(26.00),
-                                                right:
-                                                getHorizontalSize(25.00)),
-                                            child: Container(
-                                                height: getVerticalSize(23.74),
-                                                width: getHorizontalSize(24.00),
-                                                child: SvgPicture.asset(
-                                                    ImageConstant.imgHomeicon,
-                                                    fit: BoxFit.fill))),
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: getVerticalSize(3.95),
-                                                    bottom:
-                                                    getVerticalSize(0.00)),
-                                                child: Text("lbl_home".tr,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
-                                                    style: AppStyle
-                                                        .textStylePoppinsbold101
-                                                        .copyWith(
-                                                        fontSize:
-                                                        getFontSize(10),
-                                                        letterSpacing:
-                                                        0.50))))
-                                      ]),
-                                  Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                            padding: EdgeInsets.only(
-                                                left: getHorizontalSize(26.00),
-                                                right:
-                                                getHorizontalSize(25.00)),
-                                            child: Container(
-                                                height: getVerticalSize(23.74),
-                                                width: getHorizontalSize(24.00),
-                                                child: SvgPicture.asset(
-                                                    ImageConstant
-                                                        .imgExploreicon,
-                                                    fit: BoxFit.fill))),
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: getVerticalSize(3.95),
-                                                    bottom:
-                                                    getVerticalSize(0.00)),
-                                                child: Text("lbl_explore".tr,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
-                                                    style: AppStyle
-                                                        .textStylePoppinsregular10
-                                                        .copyWith(
-                                                        fontSize:
-                                                        getFontSize(10),
-                                                        letterSpacing:
-                                                        0.50))))
-                                      ]),
-                                  Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                            padding: EdgeInsets.only(
-                                                left: getHorizontalSize(26.00),
-                                                right:
-                                                getHorizontalSize(25.00)),
-                                            child: Container(
-                                                height: getVerticalSize(23.74),
-                                                width: getHorizontalSize(24.00),
-                                                child: SvgPicture.asset(
-                                                    ImageConstant.imgCarticon,
-                                                    fit: BoxFit.fill))),
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: getVerticalSize(3.95),
-                                                    bottom:
-                                                    getVerticalSize(0.00)),
-                                                child: Text("lbl_cart".tr,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
-                                                    style: AppStyle
-                                                        .textStylePoppinsregular10
-                                                        .copyWith(
-                                                        fontSize:
-                                                        getFontSize(10),
-                                                        letterSpacing:
-                                                        0.50))))
-                                      ]),
-                                  Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                            padding: EdgeInsets.only(
-                                                left: getHorizontalSize(26.00),
-                                                right:
-                                                getHorizontalSize(25.00)),
-                                            child: Container(
-                                                height: getVerticalSize(23.74),
-                                                width: getHorizontalSize(24.00),
-                                                child: SvgPicture.asset(
-                                                    ImageConstant.imgOffericon,
-                                                    fit: BoxFit.fill))),
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: getVerticalSize(3.95),
-                                                    bottom:
-                                                    getVerticalSize(0.00)),
-                                                child: Text("lbl_offer".tr,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
-                                                    style: AppStyle
-                                                        .textStylePoppinsregular10
-                                                        .copyWith(
-                                                        fontSize:
-                                                        getFontSize(10),
-                                                        letterSpacing:
-                                                        0.50))))
-                                      ]),
-                                  Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                            padding: EdgeInsets.only(
-                                                left: getHorizontalSize(26.00),
-                                                right:
-                                                getHorizontalSize(25.00)),
-                                            child: Container(
-                                                height: getVerticalSize(23.74),
-                                                width: getHorizontalSize(24.00),
-                                                child: SvgPicture.asset(
-                                                    ImageConstant.imgUsericon,
-                                                    fit: BoxFit.fill))),
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: getVerticalSize(3.95),
-                                                    bottom:
-                                                    getVerticalSize(0.00)),
-                                                child: Text("lbl_account".tr,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.center,
-                                                    style: AppStyle
-                                                        .textStylePoppinsregular10
-                                                        .copyWith(
-                                                        fontSize:
-                                                        getFontSize(10),
-                                                        letterSpacing:
-                                                        0.50))))
-                                      ])
-                                ])))
-                  ]))
+              // Container(
+              //     height: getVerticalSize(66.00),
+              //     width: size.width,
+              //     decoration: BoxDecoration(color: ColorConstant.whiteA700),
+              //     child: Stack(children: [
+              //       Align(
+              //           alignment: Alignment.bottomLeft,
+              //           child: Padding(
+              //               padding:
+              //               EdgeInsets.only(top: getVerticalSize(10.00)),
+              //               child: Row(
+              //                   mainAxisAlignment:
+              //                   MainAxisAlignment.spaceEvenly,
+              //                   crossAxisAlignment: CrossAxisAlignment.center,
+              //                   mainAxisSize: MainAxisSize.max,
+              //                   children: [
+              //                     Column(
+              //                         mainAxisSize: MainAxisSize.min,
+              //                         crossAxisAlignment:
+              //                         CrossAxisAlignment.center,
+              //                         mainAxisAlignment:
+              //                         MainAxisAlignment.start,
+              //                         children: [
+              //                           Padding(
+              //                               padding: EdgeInsets.only(
+              //                                   left: getHorizontalSize(26.00),
+              //                                   right:
+              //                                   getHorizontalSize(25.00)),
+              //                               child: Container(
+              //                                   height: getVerticalSize(23.74),
+              //                                   width: getHorizontalSize(24.00),
+              //                                   child: SvgPicture.asset(
+              //                                       ImageConstant.imgHomeicon,
+              //                                       fit: BoxFit.fill))),
+              //                           Align(
+              //                               alignment: Alignment.centerLeft,
+              //                               child: Padding(
+              //                                   padding: EdgeInsets.only(
+              //                                       top: getVerticalSize(3.95),
+              //                                       bottom:
+              //                                       getVerticalSize(0.00)),
+              //                                   child: Text("lbl_home".tr,
+              //                                       overflow:
+              //                                       TextOverflow.ellipsis,
+              //                                       textAlign: TextAlign.center,
+              //                                       style: AppStyle
+              //                                           .textStylePoppinsbold101
+              //                                           .copyWith(
+              //                                           fontSize:
+              //                                           getFontSize(10),
+              //                                           letterSpacing:
+              //                                           0.50))))
+              //                         ]),
+              //                     Column(
+              //                         mainAxisSize: MainAxisSize.min,
+              //                         crossAxisAlignment:
+              //                         CrossAxisAlignment.center,
+              //                         mainAxisAlignment:
+              //                         MainAxisAlignment.start,
+              //                         children: [
+              //                           Padding(
+              //                               padding: EdgeInsets.only(
+              //                                   left: getHorizontalSize(26.00),
+              //                                   right:
+              //                                   getHorizontalSize(25.00)),
+              //                               child: Container(
+              //                                   height: getVerticalSize(23.74),
+              //                                   width: getHorizontalSize(24.00),
+              //                                   child: SvgPicture.asset(
+              //                                       ImageConstant
+              //                                           .imgExploreicon,
+              //                                       fit: BoxFit.fill))),
+              //                           Align(
+              //                               alignment: Alignment.centerLeft,
+              //                               child: Padding(
+              //                                   padding: EdgeInsets.only(
+              //                                       top: getVerticalSize(3.95),
+              //                                       bottom:
+              //                                       getVerticalSize(0.00)),
+              //                                   child: Text("lbl_explore".tr,
+              //                                       overflow:
+              //                                       TextOverflow.ellipsis,
+              //                                       textAlign: TextAlign.center,
+              //                                       style: AppStyle
+              //                                           .textStylePoppinsregular10
+              //                                           .copyWith(
+              //                                           fontSize:
+              //                                           getFontSize(10),
+              //                                           letterSpacing:
+              //                                           0.50))))
+              //                         ]),
+              //                     Column(
+              //                         mainAxisSize: MainAxisSize.min,
+              //                         crossAxisAlignment:
+              //                         CrossAxisAlignment.center,
+              //                         mainAxisAlignment:
+              //                         MainAxisAlignment.start,
+              //                         children: [
+              //                           Padding(
+              //                               padding: EdgeInsets.only(
+              //                                   left: getHorizontalSize(26.00),
+              //                                   right:
+              //                                   getHorizontalSize(25.00)),
+              //                               child: Container(
+              //                                   height: getVerticalSize(23.74),
+              //                                   width: getHorizontalSize(24.00),
+              //                                   child: SvgPicture.asset(
+              //                                       ImageConstant.imgCarticon,
+              //                                       fit: BoxFit.fill))),
+              //                           Align(
+              //                               alignment: Alignment.centerLeft,
+              //                               child: Padding(
+              //                                   padding: EdgeInsets.only(
+              //                                       top: getVerticalSize(3.95),
+              //                                       bottom:
+              //                                       getVerticalSize(0.00)),
+              //                                   child: Text("lbl_cart".tr,
+              //                                       overflow:
+              //                                       TextOverflow.ellipsis,
+              //                                       textAlign: TextAlign.center,
+              //                                       style: AppStyle
+              //                                           .textStylePoppinsregular10
+              //                                           .copyWith(
+              //                                           fontSize:
+              //                                           getFontSize(10),
+              //                                           letterSpacing:
+              //                                           0.50))))
+              //                         ]),
+              //                     Column(
+              //                         mainAxisSize: MainAxisSize.min,
+              //                         crossAxisAlignment:
+              //                         CrossAxisAlignment.center,
+              //                         mainAxisAlignment:
+              //                         MainAxisAlignment.start,
+              //                         children: [
+              //                           Padding(
+              //                               padding: EdgeInsets.only(
+              //                                   left: getHorizontalSize(26.00),
+              //                                   right:
+              //                                   getHorizontalSize(25.00)),
+              //                               child: Container(
+              //                                   height: getVerticalSize(23.74),
+              //                                   width: getHorizontalSize(24.00),
+              //                                   child: SvgPicture.asset(
+              //                                       ImageConstant.imgOffericon,
+              //                                       fit: BoxFit.fill))),
+              //                           Align(
+              //                               alignment: Alignment.centerLeft,
+              //                               child: Padding(
+              //                                   padding: EdgeInsets.only(
+              //                                       top: getVerticalSize(3.95),
+              //                                       bottom:
+              //                                       getVerticalSize(0.00)),
+              //                                   child: Text("lbl_offer".tr,
+              //                                       overflow:
+              //                                       TextOverflow.ellipsis,
+              //                                       textAlign: TextAlign.center,
+              //                                       style: AppStyle
+              //                                           .textStylePoppinsregular10
+              //                                           .copyWith(
+              //                                           fontSize:
+              //                                           getFontSize(10),
+              //                                           letterSpacing:
+              //                                           0.50))))
+              //                         ]),
+              //                     Column(
+              //                         mainAxisSize: MainAxisSize.min,
+              //                         crossAxisAlignment:
+              //                         CrossAxisAlignment.center,
+              //                         mainAxisAlignment:
+              //                         MainAxisAlignment.start,
+              //                         children: [
+              //                           Padding(
+              //                               padding: EdgeInsets.only(
+              //                                   left: getHorizontalSize(26.00),
+              //                                   right:
+              //                                   getHorizontalSize(25.00)),
+              //                               child: Container(
+              //                                   height: getVerticalSize(23.74),
+              //                                   width: getHorizontalSize(24.00),
+              //                                   child: SvgPicture.asset(
+              //                                       ImageConstant.imgUsericon,
+              //                                       fit: BoxFit.fill))),
+              //                           Align(
+              //                               alignment: Alignment.centerLeft,
+              //                               child: Padding(
+              //                                   padding: EdgeInsets.only(
+              //                                       top: getVerticalSize(3.95),
+              //                                       bottom:
+              //                                       getVerticalSize(0.00)),
+              //                                   child: Text("lbl_account".tr,
+              //                                       overflow:
+              //                                       TextOverflow.ellipsis,
+              //                                       textAlign: TextAlign.center,
+              //                                       style: AppStyle
+              //                                           .textStylePoppinsregular10
+              //                                           .copyWith(
+              //                                           fontSize:
+              //                                           getFontSize(10),
+              //                                           letterSpacing:
+              //                                           0.50))))
+              //                         ])
+              //                   ])))
+              //     ]))
             ])));
   }
 
